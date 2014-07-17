@@ -14,55 +14,59 @@ var imageList = [],
 	jsList = [],
 	htmlList = [];
 
-function optimizeHTML(path) {
+function optimizeHTML(p) {
 	return function(next) {
 		var start = Date.now();
-		var content = fs.readFileSync(path).toString();
-		var result = htmlminifier.minify(content, {
-			removeComments: true,
-			removeCommentsFromCDATA: true,
-			collapseWhitespace: true,
-			collapseBooleanAttributes: true,
-			removeEmptyAttributes: true,
-			minifyJS: true
-		});
-		fs.writeFileSync(path, result, 'utf8');
-		log.log('update', 'Optimize HTML: %s ' + '(%dms)'.grey, path, Date.now() - start);
+		try {
+			var content = fs.readFileSync(p).toString();
+			var result = htmlminifier.minify(content, {
+				removeComments: true,
+				removeCommentsFromCDATA: true,
+				collapseWhitespace: true,
+				collapseBooleanAttributes: true,
+				removeEmptyAttributes: true,
+				minifyJS: true
+			});
+			fs.writeFileSync(p, result, 'utf8');
+		} catch (err) {
+			log.log('error', p, err);
+		}
+		log.log('update', 'Optimize HTML: %s ' + '(%dms)'.grey, p, Date.now() - start);
 		next();
 	};
 }
 
-function optimizeCSS(path) {
+function optimizeCSS(p) {
 	return function(next) {
 		var start = Date.now();
-		var content = fs.readFileSync(path).toString();
+		var content = fs.readFileSync(p).toString();
 		var result = cleancss().minify(content);
-		fs.writeFileSync(path, result, 'utf8');
-		log.log('update', 'Optimize CSS: %s ' + '(%dms)'.grey, path, Date.now() - start);
+		fs.writeFileSync(p, result, 'utf8');
+		log.log('update', 'Optimize CSS: %s ' + '(%dms)'.grey, p, Date.now() - start);
 		next();
 	};
 }
 
-function optimizeJS(path) {
+function optimizeJS(p) {
 	return function(next) {
 		var start = Date.now();
-		var content = fs.readFileSync(path).toString();
+		var content = fs.readFileSync(p).toString();
 		var result = uglify.minify(content, {
 			fromString: true
 		}).code;
-		fs.writeFileSync(path, result, 'utf8');
-		log.log('update', 'Optimize JS: %s ' + '(%dms)'.grey, path, Date.now() - start);
+		fs.writeFileSync(p, result, 'utf8');
+		log.log('update', 'Optimize JS: %s ' + '(%dms)'.grey, p, Date.now() - start);
 		next();
 	};
 }
 
 // FIXME: 貌似看起来图片无损压缩没效果
-function optimizeImage(path) {
+function optimizeImage(p) {
 	return function(next) {
 		var start = Date.now();
 		new imagemin()
-			.src(path)
-			.dest(path)
+			.src(p)
+			.dest(p)
 			.use(imagemin.jpegtran({
 				progressive: true
 			}))
@@ -70,14 +74,15 @@ function optimizeImage(path) {
 				optimizationLevel: 3
 			}))
 			.use(imagemin.pngquant())
-			.use(imagemin.gifsicle({
-				interlaced: true
-			}))
-			.optimize(
-				function(err, file) {
-					log.log('update', 'Optimize Image: %s ' + '(%dms)'.grey, path, Date.now() - start);
-					next();
-				});
+		// FIXME: 开启后会问题
+		// .use(imagemin.gifsicle({
+		// 	interlaced: true
+		// }))
+		.optimize(
+			function(err, file) {
+				log.log('update', 'Optimize Image: %s ' + '(%dms)'.grey, p, Date.now() - start);
+				next();
+			});
 	};
 
 }
@@ -114,7 +119,6 @@ function parse(dir) {
 					imageList.push(optimizeImage(p));
 					break;
 			}
-
 		}
 	}
 };
