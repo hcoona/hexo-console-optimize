@@ -1,4 +1,3 @@
-hexo-optimize
-=============
+#Hexo Optimize
 
-Hexo输出内容优化
+一个Hexo的输出优化插件

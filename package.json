@@ -1,0 +1,30 @@
+{
+  "name": "hexo-console-optimize",
+  "version": "0.0.1",
+  "description": "Hexo输出内容优化(适用于2.0+)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hexo",
+    "optimize"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hexojs/hexo.git"
+  },
+  "author": "FlashSoft <babyworld@gmail.com> (http://flashsoft.me)",
+  "license": {
+    "type": "MIT",
+    "url": "https://raw.githubusercontent.com/FlashSoft/hexo-optimize/master/LICENSE"
+  },
+  "dependencies": {
+    "async": "~0.9.0",
+    "imagemin": "~0.4.6",
+    "deferred": "~0.7.1",
+    "clean-css": "~2.2.8",
+    "uglify-js": "~2.4.15",
+    "html-minifier": "~0.6.5"
+  }
+}
