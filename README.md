@@ -40,3 +40,5 @@ hexo o -d
 
 * 按需优化，对已优化文件不进行二次优化
 * 把优化参数放入_config.yml
+* 合并CSS、JS
+* 合并Image或Base64化
