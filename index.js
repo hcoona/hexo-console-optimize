@@ -17,21 +17,18 @@ var imageList = [],
 function optimizeHTML(p) {
 	return function(next) {
 		var start = Date.now();
-		try {
-			var content = fs.readFileSync(p).toString();
-			var result = htmlminifier.minify(content, {
-				removeComments: true,
-				removeCommentsFromCDATA: true,
-				collapseWhitespace: true,
-				collapseBooleanAttributes: true,
-				removeEmptyAttributes: true,
-				minifyJS: true
-			});
-			fs.writeFileSync(p, result, 'utf8');
-		} catch (err) {
-			log.log('error', p, err);
-		}
-		log.log('update', 'Optimize HTML: %s ' + '(%dms)'.grey, p, Date.now() - start);
+		var content = fs.readFileSync(p).toString();
+		var result = htmlminifier.minify(content, {
+			removeComments: true,
+			removeCommentsFromCDATA: true,
+			collapseWhitespace: true,
+			collapseBooleanAttributes: true,
+			removeEmptyAttributes: true,
+			minifyJS: true
+		});
+		fs.writeFileSync(p, result, 'utf8');
+		var saved = parseInt((content.length - result.length) / content.length * 100, 10);
+		log.log('update', 'Optimize HTML: %s ' + '[%s saved]'.yellow + ' (%dms)'.grey, p, saved + '%', Date.now() - start);
 		next();
 	};
 }
@@ -42,7 +39,8 @@ function optimizeCSS(p) {
 		var content = fs.readFileSync(p).toString();
 		var result = cleancss().minify(content);
 		fs.writeFileSync(p, result, 'utf8');
-		log.log('update', 'Optimize CSS: %s ' + '(%dms)'.grey, p, Date.now() - start);
+		var saved = parseInt((content.length - result.length) / content.length * 100, 10);
+		log.log('update', 'Optimize CSS: %s ' + '[%s saved]'.yellow + ' (%dms)'.grey, p, saved + '%', Date.now() - start);
 		next();
 	};
 }
@@ -55,7 +53,8 @@ function optimizeJS(p) {
 			fromString: true
 		}).code;
 		fs.writeFileSync(p, result, 'utf8');
-		log.log('update', 'Optimize JS: %s ' + '(%dms)'.grey, p, Date.now() - start);
+		var saved = parseInt((content.length - result.length) / content.length * 100, 10);
+		log.log('update', 'Optimize JS: %s ' + '[%s saved]'.yellow + ' (%dms)'.grey, p, saved + '%', Date.now() - start);
 		next();
 	};
 }
@@ -64,6 +63,7 @@ function optimizeJS(p) {
 function optimizeImage(p) {
 	return function(next) {
 		var start = Date.now();
+		var stat = fs.statSync(p);
 		new imagemin()
 			.src(p)
 			.dest(p)
@@ -80,7 +80,9 @@ function optimizeImage(p) {
 		// }))
 		.optimize(
 			function(err, file) {
-				log.log('update', 'Optimize Image: %s ' + '(%dms)'.grey, p, Date.now() - start);
+				// var saved = parseInt((stat.size - file.contents.toString().length) / stat.size * 100, 10);
+				var saved = parseInt((stat.size - fs.statSync(p).size) / stat.size * 100, 10);
+				log.log('update', 'Optimize Image: %s ' + '[%s saved]'.yellow + ' (%dms)'.grey, p, saved + '%', Date.now() - start);
 				next();
 			});
 	};
