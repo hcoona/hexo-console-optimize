@@ -10,6 +10,7 @@ http://hexo.io/
 ##本插件功能
 
 帮助hexo完成HTML、CSS、JS、Image的压缩优化
+![运行截图][1]
 
 ##安装
 进到你的hexo博客根目录安装本插件
@@ -42,3 +43,6 @@ hexo o -d
 * 把优化参数放入_config.yml
 * 合并CSS、JS
 * 合并Image或Base64化
+
+
+  [1]: http://ww2.sinaimg.cn/large/56e89fd7jw1eigy0zpqw2j20x20oc4cy.jpg
